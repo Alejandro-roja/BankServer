@@ -28,9 +28,10 @@ public class ConnexionBanque extends Connexion {
      * @param delai le délai en millisecondes
      * @return true la durée d'inactivité est supérieure à delai
      */
+    //Jiayi Xu
     public boolean estInactifDepuis(long delai) {
-        //À définir :
-        throw new NotImplementedException();//ligne à supprimer
+        long tempsInactif = System.currentTimeMillis() - tempsDerniereOperation;
+        return tempsInactif >= delai;
     }
 
     /**

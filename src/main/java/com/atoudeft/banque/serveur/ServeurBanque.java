@@ -83,7 +83,20 @@ public class ServeurBanque extends Serveur {
      * Supprime toutes les connexions inactives (celles dont le délai d'inactivité dépasse DELAI_INACTIVITE - voir énoncé
      * du TP).
      */
+    //Jiayi Xu
     public void supprimeInactifs() {
-        //À définir :
+        ListIterator<Connexion> iterator = connectes.listIterator();
+
+        while(iterator.hasNext()) {
+            ConnexionBanque cnx = (ConnexionBanque) iterator.next();
+
+            if (cnx.estInactifDepuis(DELAI_INACTIVITE)) {
+                cnx.envoyer("END");
+                cnx.close();
+                enlever(cnx);
+                iterator.remove();
+            }
+        }
+
     }
 }
