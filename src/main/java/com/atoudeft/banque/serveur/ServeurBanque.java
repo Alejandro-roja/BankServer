@@ -93,7 +93,6 @@ public class ServeurBanque extends Serveur {
             if (cnx.estInactifDepuis(DELAI_INACTIVITE)) {
                 cnx.envoyer("END");
                 cnx.close();
-                enlever(cnx);
                 iterator.remove();
             }
         }
