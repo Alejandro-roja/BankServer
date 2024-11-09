@@ -43,6 +43,9 @@ public abstract class CompteBancaire implements Serializable {
     public double getSolde() {
         return solde;
     }
+    public void setNumero(String numero) { this.numero = numero;}
+    public void setType(TypeCompte type) { this.type = type; }
+    public void setSolde(double solde) { this.solde = solde; }
     public abstract boolean crediter(double montant);
     public abstract boolean debiter(double montant);
     public abstract boolean payerFacture(String numeroFacture, double montant, String description);

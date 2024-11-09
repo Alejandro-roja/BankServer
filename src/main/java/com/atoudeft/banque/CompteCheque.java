@@ -1,6 +1,6 @@
 package com.atoudeft.banque;
 
-public class CompteCheque extends  CompteBancaire {
+public class CompteCheque extends CompteBancaire {
     /**
      * Crée un compte bancaire.
      *
@@ -13,27 +13,23 @@ public class CompteCheque extends  CompteBancaire {
 
     @Override
     public boolean crediter(double montant) {
-        double tempSolde=0;
-        boolean repSolde=true;
-        if(montant>0){
-            tempSolde =getSolde()+montant;
-
-        }else{
-          repSolde=false;
+        boolean repSolde = true;
+        if (montant > 0) {
+            setSolde(getSolde() + montant);
+        } else {
+            repSolde = false;
         }
-            return repSolde;
+        return repSolde;
     }
 
     @Override
     public boolean debiter(double montant) {
-        double tempSolde=0;
-        boolean repSolde=true;
-        if (montant>0){
-            tempSolde =getSolde() - montant;
-        }else{
-            repSolde=false;
+        boolean repSolde = true;
+        if (montant > 0) {
+            setSolde(getSolde() - montant);
+        } else {
+            repSolde = false;
         }
-
         return repSolde;
     }
 
