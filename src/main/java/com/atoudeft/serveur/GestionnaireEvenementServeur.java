@@ -1,6 +1,7 @@
 package com.atoudeft.serveur;
 
 import com.atoudeft.banque.Banque;
+import com.atoudeft.banque.CompteClient;
 import com.atoudeft.banque.serveur.ConnexionBanque;
 import com.atoudeft.banque.serveur.ServeurBanque;
 import com.atoudeft.commun.evenement.Evenement;
@@ -80,20 +81,41 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                             cnx.envoyer("NOUVEAU NO "+t[0]+" existe");
                     }
                     break;
+
+                    //Jiayi Xu
                 case "CONNECT":
+                    //Si le client est deja connecté
                     if (cnx.getNumeroCompteClient()!=null) {
                         cnx.envoyer("CONNECT NO deja connecte");
                         break;
                     }
+
+                    //1. Recuperer le numero de compte-client et le nip envoyé par le client
                     argument = evenement.getArgument();
                     t = argument.split(":");
                     if (t.length<2) {
-                        cnx.envoyer("NOUVEAU NO");
+                        cnx.envoyer("CONNECT NO");
+                        break;
                     }
                     else {
                         numCompteClient = t[0];
                         nip = t[1];
-                        banque = serveurBanque.getBanque();
+                        for (Connexion connexion: serveurBanque.connectes) {
+                            ConnexionBanque connexionBanque = (ConnexionBanque) connexion;
+                            //2. Verifier qu'il n'y a pas un des connectes qui utilise deja ce compte
+                            if (numCompteClient.equals(connexionBanque.getNumeroCompteClient())) {
+                                //Sinon, le serveur refuse la demande et envoie la reponse ci-dessous au client
+                                cnx.envoyer("CONNECT NO");
+                                break;
+                            }
+                            CompteClient cptClient = serveurBanque.getBanque().getCompteClient(numCompteClient);
+                            //3. Si le compte n'existe pas et nip incorrect
+                            if (cptClient == null || nip.matches("\\d{4}")){
+                                //Envoyer reponse
+                                cnx.envoyer("CONNECT NO");
+                                break;
+                            }
+                        }
                     }
                 /******************* TRAITEMENT PAR DÉFAUT *******************/
                 default: //Renvoyer le texte recu convertit en majuscules :
