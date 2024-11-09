@@ -5,10 +5,9 @@ public class CompteCheque extends CompteBancaire {
      * Crée un compte bancaire.
      *
      * @param numero numéro du compte
-     * @param type   type du compte
      */
-    public CompteCheque(String numero, TypeCompte type) {
-        super(numero, type);
+    public CompteCheque(String numero) {
+        super(numero, TypeCompte.CHEQUE);
     }
 
     @Override
@@ -25,7 +24,7 @@ public class CompteCheque extends CompteBancaire {
     @Override
     public boolean debiter(double montant) {
         boolean repSolde = true;
-        if (montant > 0) {
+        if (montant > 0 && getSolde() >= montant) {
             setSolde(getSolde() - montant);
         } else {
             repSolde = false;
