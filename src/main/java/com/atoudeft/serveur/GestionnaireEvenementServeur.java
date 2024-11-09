@@ -72,8 +72,8 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                         nip = t[1];
                         banque = serveurBanque.getBanque();
                         if (banque.ajouter(numCompteClient, nip)) {
-                            cnx.setNumeroCompteClient(numCompteClient);
-                            cnx.setNumeroCompteActuel(banque.getNumeroCompteParDefaut(numCompteClient));
+                        //    cnx.setNumeroCompteClient(numCompteClient);
+                        //     cnx.setNumeroCompteActuel(banque.getNumeroCompteParDefaut(numCompteClient));
                             cnx.envoyer("NOUVEAU OK " + t[0] + " cree");
                         } else
                             cnx.envoyer("NOUVEAU NO " + t[0] + " existe");
