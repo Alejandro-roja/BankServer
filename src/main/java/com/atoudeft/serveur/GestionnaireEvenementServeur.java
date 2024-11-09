@@ -36,7 +36,7 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
     @Override
     public void traiter(Evenement evenement) {
         Object source = evenement.getSource();
-        ServeurBanque serveurBanque = (ServeurBanque)serveur;
+        ServeurBanque serveurBanque = (ServeurBanque) serveur;
         Banque banque;
         ConnexionBanque cnx;
         String msg, typeEvenement, argument, numCompteClient, nip;
@@ -59,64 +59,68 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                     break;
                 /******************* COMMANDES DE GESTION DE COMPTES *******************/
                 case "NOUVEAU": //Crée un nouveau compte-client :
-                    if (cnx.getNumeroCompteClient()!=null) {
+                    if (cnx.getNumeroCompteClient() != null) {
                         cnx.envoyer("NOUVEAU NO deja connecte");
                         break;
                     }
                     argument = evenement.getArgument();
                     t = argument.split(":");
-                    if (t.length<2) {
+                    if (t.length < 2) {
                         cnx.envoyer("NOUVEAU NO");
-                    }
-                    else {
+                    } else {
                         numCompteClient = t[0];
                         nip = t[1];
                         banque = serveurBanque.getBanque();
-                        if (banque.ajouter(numCompteClient,nip)) {
+                        if (banque.ajouter(numCompteClient, nip)) {
                             cnx.setNumeroCompteClient(numCompteClient);
                             cnx.setNumeroCompteActuel(banque.getNumeroCompteParDefaut(numCompteClient));
                             cnx.envoyer("NOUVEAU OK " + t[0] + " cree");
-                        }
-                        else
-                            cnx.envoyer("NOUVEAU NO "+t[0]+" existe");
+                        } else
+                            cnx.envoyer("NOUVEAU NO " + t[0] + " existe");
                     }
                     break;
 
-                    //Jiayi Xu
+                //Jiayi Xu
                 case "CONNECT":
-                    //Si le client est deja connecté
-                    if (cnx.getNumeroCompteClient()!=null) {
-                        cnx.envoyer("CONNECT NO deja connecte");
-                        break;
-                    }
-
                     //1. Recuperer le numero de compte-client et le nip envoyé par le client
                     argument = evenement.getArgument();
                     t = argument.split(":");
-                    if (t.length<2) {
-                        cnx.envoyer("CONNECT NO");
+                    if (t.length < 2) {
+                        cnx.envoyer("CONNECT NO trop court");
                         break;
                     }
-                    else {
-                        numCompteClient = t[0];
-                        nip = t[1];
-                        for (Connexion connexion: serveurBanque.connectes) {
-                            ConnexionBanque connexionBanque = (ConnexionBanque) connexion;
-                            //2. Verifier qu'il n'y a pas un des connectes qui utilise deja ce compte
-                            if (numCompteClient.equals(connexionBanque.getNumeroCompteClient())) {
-                                //Sinon, le serveur refuse la demande et envoie la reponse ci-dessous au client
-                                cnx.envoyer("CONNECT NO");
-                                break;
-                            }
-                            CompteClient cptClient = serveurBanque.getBanque().getCompteClient(numCompteClient);
-                            //3. Si le compte n'existe pas et nip incorrect
-                            if (cptClient == null || nip.matches("\\d{4}")){
-                                //Envoyer reponse
-                                cnx.envoyer("CONNECT NO");
-                                break;
-                            }
+                    numCompteClient = t[0];
+                    nip = t[1];
+                    boolean dejaUtil = false;
+                    for (Connexion connexion : serveurBanque.connectes) {
+                        ConnexionBanque connexionBanque = (ConnexionBanque) connexion;
+                        //2. Verifier qu'il n'y a pas un des connectes qui utilise deja ce compte
+                        if (numCompteClient.equals(connexionBanque.getNumeroCompteClient())) {
+                            dejaUtil = true;
+                            break;
                         }
                     }
+                    //Sinon, le serveur refuse la demande et envoie la reponse ci-dessous au client
+                    if (dejaUtil) {
+                        cnx.envoyer("CONNECT NO deja utilise");
+                        break;
+                    }
+
+                    CompteClient cptClient = serveurBanque.getBanque().getCompteClient(numCompteClient);
+                    //3. Si le compte n'existe pas ou nip incorrect
+                    if (cptClient == null || !cptClient.verifierNip(nip)) {
+                        //Envoyer reponse
+                        cnx.envoyer("CONNECT NO compte inexistant ou nip incorrect");
+                        break;
+                    }
+
+                    //4. Inscrire numero de compte-client
+                    cnx.setNumeroCompteClient(numCompteClient);
+                    cnx.setNumeroCompteActuel(serveurBanque.getBanque().getNumeroCompteParDefaut(numCompteClient));
+                    //Envoyer reponse de succes
+                    cnx.envoyer("CONNECT OK");
+                    break;
+
                 /******************* TRAITEMENT PAR DÉFAUT *******************/
                 default: //Renvoyer le texte recu convertit en majuscules :
                     msg = (evenement.getType() + " " + evenement.getArgument()).toUpperCase();

@@ -90,7 +90,7 @@ public class ServeurBanque extends Serveur {
         while(iterator.hasNext()) {
             ConnexionBanque cnx = (ConnexionBanque) iterator.next();
 
-            if (cnx.estInactifDepuis(DELAI_INACTIVITE)) {
+            if (cnx.estInactifDepuis(30000)) {
                 cnx.envoyer("END");
                 cnx.close();
                 iterator.remove();
