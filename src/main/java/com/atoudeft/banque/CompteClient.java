@@ -32,6 +32,7 @@ public class CompteClient implements Serializable {
     }
 
     public String getNumero() { return numero; }
+    public List<CompteBancaire> getComptes() { return this.comptes; }
 
     /**
      * Verifie si le nip fournit est egal au nip du
@@ -40,7 +41,5 @@ public class CompteClient implements Serializable {
      * @param nipFournit le nip fournit
      * @return true si le nip fournit est egal au nip du compte-client
      */
-    public boolean verifierNip(String nipFournit) {
-        return this.nip.equals(nip);
-    }
+    public boolean verifierNip(String nipFournit) { return this.nip.equals(nipFournit); }
 }

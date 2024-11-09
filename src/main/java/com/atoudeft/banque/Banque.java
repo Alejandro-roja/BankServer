@@ -109,7 +109,7 @@ public class Banque implements Serializable {
          * Vérifier que le nip a entre 4 et 5 caractères et ne contient que des chiffres.
          * Sinon, retourner false.
          */
-        if (!numCompteClient.matches("^[0-9]{4,5}$")) {
+        if (!nip.matches("^[0-9]{4,5}$")) {
             return false;
         }
 
@@ -139,8 +139,20 @@ public class Banque implements Serializable {
      * @param numCompteClient numéro de compte-client
      * @return numéro du compte-chèque du client ayant le numéro de compte-client
      */
+    //Jiayi Xu
     public String getNumeroCompteParDefaut(String numCompteClient) {
-        //À compléter : retourner le numéro du compte-chèque du compte-client.
-        return null; //À modifier
+        CompteClient cptClient = getCompteClient(numCompteClient);
+
+        if (cptClient == null) {
+            return null;
+        }
+        List<CompteBancaire> comptes = cptClient.getComptes();
+
+        for (CompteBancaire compteBancaire : comptes) {
+            if (compteBancaire instanceof CompteCheque) {
+                return compteBancaire.getNumero();
+            }
+        }
+        return null;
     }
 }
