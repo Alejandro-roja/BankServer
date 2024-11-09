@@ -17,7 +17,6 @@ public class Banque implements Serializable {
 
     /**
      * Recherche un compte-client à partir de son numéro.
-     *
      * @param numeroCompteClient le numéro du compte-client
      * @return le compte-client s'il a été trouvé. Sinon, retourne null
      */
