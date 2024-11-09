@@ -125,7 +125,7 @@ public class Banque implements Serializable {
         // Générer  un nouveau numéro de compte bancaire qui n'est pas déjà utilisé
         String numeroCptBancaise = CompteBancaire.genereNouveauNumero();
         // Créer un compte-chèque avec ce numéro et l'ajouter au compteclient
-        CompteCheque cptCheque = new CompteCheque(numeroCptBancaise, TypeCompte.CHEQUE);
+        CompteCheque cptCheque = new CompteCheque(numeroCptBancaise);
         // Ajouter le compte-client à la liste des comptes de la banque
         cptClient.ajouter(cptCheque);
         this.comptes.add(cptClient);
