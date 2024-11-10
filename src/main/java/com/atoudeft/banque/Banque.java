@@ -31,6 +31,26 @@ public class Banque implements Serializable {
     }
 
     /**
+     * Verifie si le numero du compte-client n'est pas deja utilise
+     * par un compte de la banque
+     *
+     * @param numeroCompteClient le numéro du compte-client
+     * @return true si le numero est deja utilise, sinon retourne false
+     */
+    //Jiayi Xu
+    public boolean compteBancaireExiste(String numeroCompteClient) {
+        for (CompteClient client : this.comptes) {
+            for (CompteBancaire compte: client.getComptes()) {
+                if (compte.getNumero().equals(numeroCompteClient)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    /**
      * Vérifier qu'un compte-bancaire appartient bien au compte-client.
      *
      * @param numeroCompteBancaire numéro du compte-bancaire
@@ -123,9 +143,9 @@ public class Banque implements Serializable {
         // Créer un compte-client avec le numéro et le nip
         CompteClient cptClient = new CompteClient(numCompteClient, nip);
         // Générer  un nouveau numéro de compte bancaire qui n'est pas déjà utilisé
-        String numeroCptBancaise = CompteBancaire.genereNouveauNumero();
+        String numeroCptBancaire = CompteBancaire.genereNouveauNumero();
         // Créer un compte-chèque avec ce numéro et l'ajouter au compteclient
-        CompteCheque cptCheque = new CompteCheque(numeroCptBancaise);
+        CompteCheque cptCheque = new CompteCheque(numeroCptBancaire);
         // Ajouter le compte-client à la liste des comptes de la banque
         cptClient.ajouter(cptCheque);
         this.comptes.add(cptClient);
@@ -154,5 +174,25 @@ public class Banque implements Serializable {
             }
         }
         return null;
+    }
+
+    /**
+     * Verifier si le client possede un compte-epargne
+     * Sinon retourne false
+     *
+     * @param numCompteClient numero de compte-client
+     * @return true si le client possede un compte-epargne
+     */
+    //Jiayi Xu
+    public boolean possedeCompteEpargne (String numCompteClient) {
+        CompteClient cptClient = getCompteClient(numCompteClient);
+        if (cptClient != null) {
+            for (CompteBancaire cptBancaire : cptClient.getComptes()) {
+                if (cptBancaire instanceof CompteEpargne) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

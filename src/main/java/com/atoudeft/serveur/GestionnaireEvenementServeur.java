@@ -1,7 +1,9 @@
 package com.atoudeft.serveur;
 
 import com.atoudeft.banque.Banque;
+import com.atoudeft.banque.CompteBancaire;
 import com.atoudeft.banque.CompteClient;
+import com.atoudeft.banque.CompteEpargne;
 import com.atoudeft.banque.serveur.ConnexionBanque;
 import com.atoudeft.banque.serveur.ServeurBanque;
 import com.atoudeft.commun.evenement.Evenement;
@@ -72,8 +74,8 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                         nip = t[1];
                         banque = serveurBanque.getBanque();
                         if (banque.ajouter(numCompteClient, nip)) {
-                        //    cnx.setNumeroCompteClient(numCompteClient);
-                        //     cnx.setNumeroCompteActuel(banque.getNumeroCompteParDefaut(numCompteClient));
+                            //    cnx.setNumeroCompteClient(numCompteClient);
+                            //    cnx.setNumeroCompteActuel(banque.getNumeroCompteParDefaut(numCompteClient));
                             cnx.envoyer("NOUVEAU OK " + t[0] + " cree");
                         } else
                             cnx.envoyer("NOUVEAU NO " + t[0] + " existe");
@@ -121,6 +123,29 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                     cnx.envoyer("CONNECT OK");
                     break;
 
+                //Jiayi Xu
+                case "EPARGNE":
+                    if (cnx.getNumeroCompteClient() == null) {
+                        cnx.envoyer("EPARGNE NO pas encore connecte");
+                        break;
+                    }
+                    numCompteClient = cnx.getNumeroCompteClient();
+                    banque = ((ServeurBanque) serveur).getBanque();
+
+                    if (banque.possedeCompteEpargne(numCompteClient)) {
+                        cnx.envoyer("EPARGNE NO");
+                        break;
+                    }
+                    String numBancaire;
+                    do {
+                        numBancaire = CompteBancaire.genereNouveauNumero();
+                    } while (banque.compteBancaireExiste(numBancaire));
+
+                    CompteEpargne cptEpargne = new CompteEpargne(numBancaire, 5.0);
+                    cptClient = banque.getCompteClient(numCompteClient);
+                    cptClient.ajouter(cptEpargne);
+                    cnx.envoyer("EPARGNE OK compte-epargne cree avec le numero: " + numBancaire);
+                    break;
                 /******************* TRAITEMENT PAR DÉFAUT *******************/
                 default: //Renvoyer le texte recu convertit en majuscules :
                     msg = (evenement.getType() + " " + evenement.getArgument()).toUpperCase();
