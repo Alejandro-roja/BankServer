@@ -1,9 +1,6 @@
 package com.atoudeft.serveur;
 
-import com.atoudeft.banque.Banque;
-import com.atoudeft.banque.CompteBancaire;
-import com.atoudeft.banque.CompteClient;
-import com.atoudeft.banque.CompteEpargne;
+import com.atoudeft.banque.*;
 import com.atoudeft.banque.serveur.ConnexionBanque;
 import com.atoudeft.banque.serveur.ServeurBanque;
 import com.atoudeft.commun.evenement.Evenement;
@@ -20,7 +17,9 @@ import com.atoudeft.commun.net.Connexion;
  */
 public class GestionnaireEvenementServeur implements GestionnaireEvenement {
     private Serveur serveur;
-
+    private static CompteCheque compteCheque;
+    private static CompteEpargne compteEpargne;
+    private static boolean epargne=false;
     /**
      * Construit un gestionnaire d'événements pour un serveur.
      *
@@ -125,6 +124,7 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
 
                 //Jiayi Xu
                 case "EPARGNE":
+
                     if (cnx.getNumeroCompteClient() == null) {
                         cnx.envoyer("EPARGNE NO pas encore connecte");
                         break;
@@ -140,13 +140,39 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                     do {
                         numBancaire = CompteBancaire.genereNouveauNumero();
                     } while (banque.compteBancaireExiste(numBancaire));
-
-                    CompteEpargne cptEpargne = new CompteEpargne(numBancaire, 5.0);
+                    this.compteEpargne = new CompteEpargne(numBancaire, 5.0);
                     cptClient = banque.getCompteClient(numCompteClient);
-                    cptClient.ajouter(cptEpargne);
+                    cptClient.ajouter(this.compteEpargne);
                     cnx.envoyer("EPARGNE OK compte-epargne cree avec le numero: " + numBancaire);
+                    this.epargne =true;
                     break;
-                /******************* TRAITEMENT PAR DÉFAUT *******************/
+                //Alejandro
+                case"SELECT":
+                    if(cnx.getNumeroCompteClient() != null) {
+                        argument = evenement.getArgument();
+                        if(argument.equals("epargne")&& epargne==true) {
+                           this.compteCheque=new CompteCheque(cnx.getNumeroCompteActuel());
+                            cnx.setNumeroCompteActuel(compteEpargne.getNumero());
+                            cnx.envoyer("SELECT epargne OK  "+cnx.getNumeroCompteActuel());
+                        cnx.setNumeroCompteActuel(compteCheque.getNumero());
+                        }else if(argument.equals("cheque")) {
+                            cnx.setNumeroCompteActuel(cnx.getNumeroCompteActuel());
+                            cnx.envoyer(" cheque OK  "+cnx.getNumeroCompteActuel());
+                        }else{
+                            cnx.envoyer("SELECT NO");
+
+                        }
+
+                    }else{
+                        cnx.envoyer("SELECT NO");
+                        System.out.println("je suis rentré dans");
+                    }
+                    break ;
+                    //Alejandro
+                case"DEPOT":
+
+                    break;
+                    /******************* TRAITEMENT PAR DÉFAUT *******************/
                 default: //Renvoyer le texte recu convertit en majuscules :
                     msg = (evenement.getType() + " " + evenement.getArgument()).toUpperCase();
                     cnx.envoyer(msg);

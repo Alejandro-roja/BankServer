@@ -20,6 +20,7 @@ public class ConnexionBanque extends Connexion {
     public ConnexionBanque(Socket s) {
         super(s);
         tempsDerniereOperation = System.currentTimeMillis();
+
     }
 
     /**

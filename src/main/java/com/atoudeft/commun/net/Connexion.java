@@ -10,7 +10,10 @@ import java.net.Socket;
  *
  * @author Abdelmoumène Toudeft (Abdelmoumene.Toudeft@etsmtl.ca)
  * @version 1.1
- * @since 2023-09-01
+ * @sinc
+ *
+ *
+ * e 2023-09-01
  */
 public class Connexion {
 
