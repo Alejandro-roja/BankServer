@@ -154,12 +154,14 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                         argument = evenement.getArgument();
                         if(argument.equals("epargne")&& epargne==true) {
                            this.epargneSelect = true;
+                           this.chequeSelect = false;
                             this.compteCheque=new CompteCheque(cnx.getNumeroCompteActuel());
                             cnx.setNumeroCompteActuel(compteEpargne.getNumero());
                             cnx.envoyer("SELECT epargne OK  "+cnx.getNumeroCompteActuel());
                         cnx.setNumeroCompteActuel(compteCheque.getNumero());
                         }else if(argument.equals("cheque")) {
                             this.chequeSelect = true;
+                            this.epargneSelect = false;
                             cnx.setNumeroCompteActuel(cnx.getNumeroCompteActuel());
                             cnx.envoyer(" cheque OK  "+cnx.getNumeroCompteActuel());
                         }else{
@@ -187,6 +189,39 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                     }else{
                         cnx.envoyer("NO ");
                     }
+                    break;
+
+                case "RETRAIT":
+                    argument = evenement.getArgument();
+                    double valeur = Double.parseDouble(argument);
+                    if(epargneSelect==true &&compteEpargne.debiter(valeur)==true ) {
+                        this.compteEpargne.debiter(valeur);
+                        cnx.envoyer("OK "+compteEpargne.getSolde());
+                    }else if(chequeSelect==true&& compteCheque.debiter(valeur)==true) {
+                        this.compteCheque.debiter(valeur);
+                        cnx.envoyer("OK "+compteCheque.getSolde());
+                    }else{
+                        cnx.envoyer("NO ");
+                    }
+
+                    break;
+                case "FACTURE":
+                    argument = evenement.getArgument();
+                    t = argument.split(" ");
+                    String infoFacture=t[(t.length)-3]+t[(t.length)-2]+t[(t.length-1)];
+                    if (chequeSelect==true && compteCheque.payerFacture(t[1],Double.parseDouble(t[0]),infoFacture)==true) {
+                        this.compteCheque.payerFacture(t[1],Double.parseDouble(t[0]),infoFacture);
+                    cnx.envoyer("OK "+compteCheque.getSolde());
+                   System.out.println(compteCheque.getSolde());
+                    } else if (epargneSelect==true && compteEpargne.payerFacture(t[1],Double.parseDouble(t[0]),infoFacture)==true) {
+                       compteEpargne.payerFacture(t[1],Double.parseDouble(t[0]),infoFacture);
+                    cnx.envoyer("OK "+compteEpargne.getSolde());
+                    System.out.println(compteEpargne.getSolde());
+                    }else {
+                        cnx.envoyer("NO ");
+                    }
+
+
                     break;
                     /******************* TRAITEMENT PAR DÉFAUT *******************/
                 default: //Renvoyer le texte recu convertit en majuscules :

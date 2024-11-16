@@ -69,7 +69,14 @@ public class CompteEpargne extends CompteBancaire {
      */
     @Override
     public boolean payerFacture(String numeroFacture, double montant, String description) {
-        return false;
+        boolean facture=false;
+        if(montant>0){
+            setSolde(getSolde() - montant);
+            facture=true;
+        }else{
+            facture=false;
+        }
+        return facture;
     }
 
     /**
