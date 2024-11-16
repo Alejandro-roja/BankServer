@@ -20,6 +20,8 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
     private static CompteCheque compteCheque;
     private static CompteEpargne compteEpargne;
     private static boolean epargne=false;
+    private static boolean epargneSelect=false;
+    private static boolean chequeSelect=false;
     /**
      * Construit un gestionnaire d'événements pour un serveur.
      *
@@ -151,11 +153,13 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                     if(cnx.getNumeroCompteClient() != null) {
                         argument = evenement.getArgument();
                         if(argument.equals("epargne")&& epargne==true) {
-                           this.compteCheque=new CompteCheque(cnx.getNumeroCompteActuel());
+                           this.epargneSelect = true;
+                            this.compteCheque=new CompteCheque(cnx.getNumeroCompteActuel());
                             cnx.setNumeroCompteActuel(compteEpargne.getNumero());
                             cnx.envoyer("SELECT epargne OK  "+cnx.getNumeroCompteActuel());
                         cnx.setNumeroCompteActuel(compteCheque.getNumero());
                         }else if(argument.equals("cheque")) {
+                            this.chequeSelect = true;
                             cnx.setNumeroCompteActuel(cnx.getNumeroCompteActuel());
                             cnx.envoyer(" cheque OK  "+cnx.getNumeroCompteActuel());
                         }else{
@@ -165,12 +169,24 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
 
                     }else{
                         cnx.envoyer("SELECT NO");
-                        System.out.println("je suis rentré dans");
+
                     }
                     break ;
                     //Alejandro
                 case"DEPOT":
+                    argument = evenement.getArgument();
+                    if(epargneSelect==true) {
 
+                        double valeur = Double.parseDouble(argument);
+                        this.compteEpargne.crediter(valeur);
+                        cnx.envoyer("OK "+compteEpargne.getSolde());
+                    }else if(chequeSelect==true) {
+                        double valeur = Double.parseDouble(argument);
+                        this.compteCheque.crediter(valeur);
+                        cnx.envoyer("OK "+compteCheque.getSolde());
+                    }else{
+                        cnx.envoyer("NO ");
+                    }
                     break;
                     /******************* TRAITEMENT PAR DÉFAUT *******************/
                 default: //Renvoyer le texte recu convertit en majuscules :
