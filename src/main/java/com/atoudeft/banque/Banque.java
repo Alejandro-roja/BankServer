@@ -9,6 +9,7 @@ import java.util.List;
 public class Banque implements Serializable {
     private String nom;
     private List<CompteClient> comptes;
+private String numeroCompteBanque;
 
     public Banque(String nom) {
         this.nom = nom;
@@ -143,9 +144,9 @@ public class Banque implements Serializable {
         // Créer un compte-client avec le numéro et le nip
         CompteClient cptClient = new CompteClient(numCompteClient, nip);
         // Générer  un nouveau numéro de compte bancaire qui n'est pas déjà utilisé
-        String numeroCptBancaire = CompteBancaire.genereNouveauNumero();
+        numeroCompteBanque = CompteBancaire.genereNouveauNumero();
         // Créer un compte-chèque avec ce numéro et l'ajouter au compteclient
-        CompteCheque cptCheque = new CompteCheque(numeroCptBancaire);
+        CompteCheque cptCheque = new CompteCheque(numeroCompteBanque);
         // Ajouter le compte-client à la liste des comptes de la banque
         cptClient.ajouter(cptCheque);
         this.comptes.add(cptClient);
@@ -194,5 +195,13 @@ public class Banque implements Serializable {
             }
         }
         return false;
+    }
+//Alejandro
+    public String getNumeroCompteBanque() {
+        return numeroCompteBanque;
+    }
+//Alejandro
+    public void setNumeroCompteBanque(String numeroCompteBanque) {
+        this.numeroCompteBanque = numeroCompteBanque;
     }
 }
