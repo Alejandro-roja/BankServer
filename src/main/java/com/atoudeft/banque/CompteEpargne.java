@@ -1,28 +1,33 @@
 package com.atoudeft.banque;
 
+/**
+ * Represente un compte epargne dans une banque.
+ *
+ * @author Jiayi Xu
+ */
 public class CompteEpargne extends CompteBancaire {
     private double tauxInteret;
     private static final double LIMITE = 1000.0;
     private static final double FRAIS = 2.0;
-
-
-
-
 
     /**
      * Crée un compte bancaire.
      *
      * @param numero numéro du compte
      */
+    //Jiayi Xu
     public CompteEpargne(String numero, Double tauxInteret) {
         super(numero, TypeCompte.EPARGNE);
         this.tauxInteret = tauxInteret;
     }
 
     /**
-     * @param montant
-     * @return
+     * Credite un montant au solde s'il est strictement positif.
+     *
+     * @param montant Le montant a ajouter au solde du compte
+     * @return true si l'operation reussit, false sinon
      */
+    //Jiayi Xu
     @Override
     public boolean crediter(double montant) {
         boolean repSolde = true;
@@ -40,11 +45,10 @@ public class CompteEpargne extends CompteBancaire {
      */
     @Override
     public boolean debiter(double montant) {
-        boolean repSolde = false;
-        if (montant > 0 && getSolde() >= montant)  {
+        boolean repSolde = true;
+        if (montant > 0 && getSolde() >= montant) {
             double avantSolde = getSolde();
             setSolde(getSolde() - montant);
-            repSolde=true;
             if (avantSolde < LIMITE) {
                 setSolde(getSolde() - FRAIS);
             }
@@ -56,33 +60,39 @@ public class CompteEpargne extends CompteBancaire {
      * Calcule les intérêts et les ajoute au solde
      */
     public void ajouterInterets() {
-        double interets = getSolde() * tauxInteret/100;
+        double interets = getSolde() * tauxInteret / 100;
         setSolde(getSolde() + interets);
     }
 
     /**
-     * @param numeroFacture
-     * @param montant
-     * @param description
-     * @return
+     * Paie une facture en debitant le montant au compte.
+     *
+     * @param numeroFacture Le numero de la facture a payer
+     * @param montant       Le montant de la facture
+     * @param description   Description de la facture
+     * @return true si l'operation reussit, false sinon
      */
+    //Alejandro Rojas
     @Override
     public boolean payerFacture(String numeroFacture, double montant, String description) {
-        boolean facture=false;
-        if(montant>0){
+        boolean facture = false;
+        if (montant > 0) {
             setSolde(getSolde() - montant);
-            facture=true;
-        }else{
-            facture=false;
+            facture = true;
+        } else {
+            facture = false;
         }
         return facture;
     }
 
     /**
-     * @param montant
-     * @param numeroCompteDestinataire
-     * @return
+     * Effectue un transfert vers un autre compte.
+     *
+     * @param montant                  Le montant a transferer
+     * @param numeroCompteDestinataire Le numero du compte destinataire
+     * @return true si l'operation reussit, false sinon
      */
+    //Alejandro Rojas
     @Override
     public boolean transferer(double montant, String numeroCompteDestinataire) {
         return false;
