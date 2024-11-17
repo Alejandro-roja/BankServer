@@ -61,7 +61,7 @@ public class CompteEpargne extends CompteBancaire {
         } else {
             repSolde = false;
         }
-        return false;
+        return repSolde;
     }
 
     /*
