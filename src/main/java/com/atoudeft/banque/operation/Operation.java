@@ -1,4 +1,6 @@
-package com.atoudeft.banque;
+package com.atoudeft.banque.operation;
+
+import com.atoudeft.banque.TypeOperation;
 
 import java.util.Date;
 
