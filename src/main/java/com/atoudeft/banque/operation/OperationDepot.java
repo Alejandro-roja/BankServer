@@ -20,4 +20,11 @@ public class OperationDepot extends Operation {
         this.montant = montant;
     }
 
+    public String toString() {
+        return getDate() + " " + getType() + " " + this.montant;
+    }
+
+    //getter pour le montant
+    public double getMontant() { return this.montant; }
+
 }

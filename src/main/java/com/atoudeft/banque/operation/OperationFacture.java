@@ -26,4 +26,14 @@ public class OperationFacture extends Operation {
         this.numDeFacture = numDeFacture;
         this.description = description;
     }
+
+    public String toString() {
+        return getDate() + " " + getType() + " " + this.montant +
+                " No de facture: " + this.numDeFacture + " Description: " + this.description;
+    }
+
+    //getters pour le montant, numero de facture et description
+    public double getMontant() { return this.montant; }
+    public String getNumDeFacture() { return this.numDeFacture; }
+    public String getDescription() { return this.description; }
 }

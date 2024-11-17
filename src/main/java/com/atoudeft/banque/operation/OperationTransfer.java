@@ -24,4 +24,13 @@ public class OperationTransfer extends Operation {
         this.numDesti = numDesti;
     }
 
+    public String toString() {
+        return getDate() + " " + getType() + " " + this.montant +
+                " No de compte destinataire: " + this.numDesti;
+    }
+
+    //getters pour le montant et numero destinataire
+    public double getMontant() { return this.montant; }
+    public String getNumDesti() { return numDesti; }
+
 }
