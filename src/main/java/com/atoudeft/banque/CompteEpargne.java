@@ -40,17 +40,16 @@ public class CompteEpargne extends CompteBancaire {
      */
     @Override
     public boolean debiter(double montant) {
-        boolean repSolde = true;
+        boolean repSolde = false;
         if (montant > 0 && getSolde() >= montant)  {
             double avantSolde = getSolde();
             setSolde(getSolde() - montant);
+            repSolde=true;
             if (avantSolde < LIMITE) {
                 setSolde(getSolde() - FRAIS);
             }
-        } else {
-            repSolde = false;
         }
-        return false;
+        return repSolde;
     }
 
     /*
