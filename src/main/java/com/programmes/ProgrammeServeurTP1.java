@@ -36,6 +36,7 @@ public class ProgrammeServeurTP1 {
             System.out.println("??? Saisissez EXIT pour arreter le serveur.");
             saisie = clavier.nextLine();
         }
+
         serveur.arreter();
     }
 }
