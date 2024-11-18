@@ -21,6 +21,7 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
     private static CompteEpargne compteEpargne;
     private static boolean epargne=false;
     private static boolean epargneSelect=false;
+
     private static boolean chequeSelect=false;
     /**
      * Construit un gestionnaire d'événements pour un serveur.
@@ -123,7 +124,7 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                     cnx.setNumeroCompteClient(numCompteClient);
                     cnx.setNumeroCompteActuel(serveurBanque.getBanque().getNumeroCompteParDefaut(numCompteClient));
                     //Envoyer reponse de succes
-                    cnx.envoyer("CONNECT OK");
+                    cnx.envoyer("CONNECT OK  "+  cnx.getNumeroCompteActuel());
                     break;
 
                 //Jiayi Xu
@@ -151,6 +152,7 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                     this.epargne =true;
                     break;
                 //Alejandro
+                //permet de choisire un compte épargne ou un compte cheque
                 case"SELECT":
                     if(cnx.getNumeroCompteClient() != null) {
                         argument = evenement.getArgument();
@@ -158,7 +160,8 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                         if(argument.equals("epargne")&& epargne==true) {
                            this.epargneSelect = true;
                            this.chequeSelect = false;
-                            cnx.setNumeroCompteActuel(compteEpargne.getNumero());
+
+                           cnx.setNumeroCompteActuel(compteEpargne.getNumero());
                             cnx.envoyer("SELECT epargne OK  "+cnx.getNumeroCompteActuel());
                         cnx.setNumeroCompteActuel(compteCheque.getNumero());
                         }else if(argument.equals("cheque")) {
@@ -177,6 +180,7 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                     }
                     break ;
                     //Alejandro
+                // permet de dépositer de l'argent dans un compte epargne ou chèque
                 case"DEPOT":
                     argument = evenement.getArgument();
                     if(epargneSelect==true) {
@@ -192,7 +196,7 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                         cnx.envoyer("NO ");
                     }
                     break;
-
+                    // permet de retirer de l'argent
                 case "RETRAIT":
                     argument = evenement.getArgument();
                     double valeur = Double.parseDouble(argument);
@@ -206,10 +210,17 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
 
                     break;
                  //Alejandro
+                //permet de payer une facture
                     case "FACTURE":
                     argument = evenement.getArgument();
                     t = argument.split(" ");
-                    String infoFacture=t[(t.length)-3]+t[(t.length)-2]+t[(t.length-1)];
+                        String infoFacture;
+                    if(chequeSelect||epargneSelect) {
+                           infoFacture = t[(t.length) - 3] + t[(t.length) - 2] + t[(t.length - 1)];
+                      }else{
+                        cnx.envoyer("NO");
+                        break;
+                    }
                     if (chequeSelect==true && compteCheque.payerFacture(t[1],Double.parseDouble(t[0]),infoFacture)==true) {
                         cnx.envoyer("OK "+compteCheque.getSolde());
                    } else if (epargneSelect==true && compteEpargne.payerFacture(t[1],Double.parseDouble(t[0]),infoFacture)==true) {
@@ -218,11 +229,30 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                         cnx.envoyer("NO ");
                     }
                     break;
+                    //Alejandro
+                //permet de tranférer de l'argent à un autre compte en prennant de largent d'un compte
+                //cheque ou épargne
+                case "TRANSFER":
+                    argument = evenement.getArgument();
+                   t= argument.split(" ");
+                    banque = serveurBanque.getBanque();
+                    if(banque.compteBancaireExiste(t[1])) {
+                        double valeure = Double.parseDouble(t[0]);
+                        if (epargneSelect == true && compteEpargne.debiter(valeure) == true) {
+                            cnx.envoyer("OK " + compteEpargne.getSolde());
 
-                case"TRANSFER":
-
+                        } else if (chequeSelect == true && compteCheque.debiter(valeure) == true) {
+                            cnx.envoyer("OK " + compteCheque.getSolde());
+                        } else {
+                            cnx.envoyer("NO ");
+                        }
+                    }else{
+                        cnx.envoyer("NO ");
+                    }
                     break;
-                    /******************* TRAITEMENT PAR DÉFAUT *******************/
+
+
+                /******************* TRAITEMENT PAR DÉFAUT *******************/
                 default: //Renvoyer le texte recu convertit en majuscules :
                     msg = (evenement.getType() + " " + evenement.getArgument()).toUpperCase();
                     cnx.envoyer(msg);
