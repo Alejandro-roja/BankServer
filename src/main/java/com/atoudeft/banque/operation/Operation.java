@@ -2,6 +2,7 @@ package com.atoudeft.banque.operation;
 
 import com.atoudeft.banque.TypeOperation;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -9,7 +10,9 @@ import java.util.Date;
  *
  * @author Jiayi Xu
  */
-public abstract class Operation {
+public abstract class Operation implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private TypeOperation type;
     private Date date;
 
