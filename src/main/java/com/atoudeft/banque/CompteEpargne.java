@@ -1,5 +1,9 @@
 package com.atoudeft.banque;
 
+import com.atoudeft.banque.operation.OperationDepot;
+import com.atoudeft.banque.operation.OperationFacture;
+import com.atoudeft.banque.operation.OperationRetrait;
+
 /**
  * Represente un compte epargne dans une banque.
  *
@@ -33,6 +37,8 @@ public class CompteEpargne extends CompteBancaire {
         boolean repSolde = true;
         if (montant > 0) {
             setSolde(getSolde() + montant);
+            OperationDepot o = new OperationDepot(montant);
+            ajouterOp(o);
         } else {
             repSolde = false;
         }
@@ -40,15 +46,21 @@ public class CompteEpargne extends CompteBancaire {
     }
 
     /**
-     * @param montant
-     * @return
+     * Debite le montant au solde s'il est strictement positif
+     * et qu'il y a assez de fonds.
+     *
+     * @param montant Le montant a debiter au solde du compte
+     * @return true si l'operation reussit, false sinon
      */
+    //Jiayi Xu
     @Override
     public boolean debiter(double montant) {
         boolean repSolde = true;
         if (montant > 0 && getSolde() >= montant) {
             double avantSolde = getSolde();
             setSolde(getSolde() - montant);
+            OperationRetrait o = new OperationRetrait(montant);
+            ajouterOp(o);
             if (avantSolde < LIMITE) {
                 setSolde(getSolde() - FRAIS);
             }
@@ -59,6 +71,7 @@ public class CompteEpargne extends CompteBancaire {
     /*
      * Calcule les intérêts et les ajoute au solde
      */
+    //Jiayi Xu
     public void ajouterInterets() {
         double interets = getSolde() * tauxInteret / 100;
         setSolde(getSolde() + interets);
@@ -78,6 +91,8 @@ public class CompteEpargne extends CompteBancaire {
         boolean facture = false;
         if (montant > 0) {
             setSolde(getSolde() - montant);
+            OperationFacture o = new OperationFacture(montant, numeroFacture, description);
+            ajouterOp(o);
             facture = true;
         } else {
             facture = false;

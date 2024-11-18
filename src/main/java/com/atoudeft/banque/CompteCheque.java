@@ -1,5 +1,9 @@
 package com.atoudeft.banque;
 
+import com.atoudeft.banque.operation.OperationDepot;
+import com.atoudeft.banque.operation.OperationFacture;
+import com.atoudeft.banque.operation.OperationRetrait;
+
 /**
  * Represente un compte cheque dans une banque.
  *
@@ -29,6 +33,8 @@ public class CompteCheque extends CompteBancaire {
         boolean repSolde = true;
         if (montant > 0) {
             setSolde(getSolde() + montant);
+            OperationDepot o = new OperationDepot(montant);
+            ajouterOp(o);
         } else {
             repSolde = false;
         }
@@ -48,6 +54,8 @@ public class CompteCheque extends CompteBancaire {
         boolean repSolde = true;
         if (montant > 0 && getSolde() >= montant) {
             setSolde(getSolde() - montant);
+            OperationRetrait o = new OperationRetrait(montant);
+            ajouterOp(o);
         } else {
             repSolde = false;
         }
@@ -66,8 +74,10 @@ public class CompteCheque extends CompteBancaire {
     @Override
     public boolean payerFacture(String numeroFacture, double montant, String description) {
         boolean facture = false;
-        if (montant > 0) {
+        if (montant > 0 && getSolde() >= montant) {
             setSolde(getSolde() - montant);
+            OperationFacture o = new OperationFacture(montant, numeroFacture, description);
+            ajouterOp(o);
             facture = true;
         } else {
             facture = false;
