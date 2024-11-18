@@ -1,5 +1,6 @@
 package com.atoudeft.banque;
 
+import com.atoudeft.banque.operation.Operation;
 import com.atoudeft.banque.operation.PileChainee;
 
 import java.io.Serializable;
@@ -43,6 +44,26 @@ public abstract class CompteBancaire implements Serializable {
         this.historique = new PileChainee();
     }
 
+    /**
+     * Ajoute une opération à l'historique.
+     *
+     * @param o l'opération à ajouter
+     */
+    //Jiayi Xu
+    public void ajouterOp(Operation o) {
+        historique.empiler(o);
+    }
+
+    /**
+     * Retire une opération à l'historique.
+     *
+     * @param o l'opération à retirer
+     */
+    //Jiayi Xu
+    public void retirerOp(Operation o) {
+        historique.depiler();
+    }
+
     public String getNumero() {
         return numero;
     }
@@ -66,6 +87,8 @@ public abstract class CompteBancaire implements Serializable {
     public void setSolde(double solde) {
         this.solde = solde;
     }
+
+    public PileChainee getHistorique() { return this.historique; }
 
     public abstract boolean crediter(double montant);
 
