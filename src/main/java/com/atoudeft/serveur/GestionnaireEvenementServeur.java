@@ -1,17 +1,22 @@
 package com.atoudeft.serveur;
 
 import com.atoudeft.banque.*;
+import com.atoudeft.banque.operation.Operation;
 import com.atoudeft.banque.serveur.ConnexionBanque;
 import com.atoudeft.banque.serveur.ServeurBanque;
 import com.atoudeft.commun.evenement.Evenement;
 import com.atoudeft.commun.evenement.GestionnaireEvenement;
 import com.atoudeft.commun.net.Connexion;
 
+import java.util.List;
+
 /**
  * Cette classe représente un gestionnaire d'événement d'un serveur. Lorsqu'un serveur reçoit un texte d'un client,
  * il crée un événement à partir du texte reçu et alerte ce gestionnaire qui réagit en gérant l'événement.
  *
- * @author Abdelmoumène Toudeft (Abdelmoumene.Toudeft@etsmtl.ca)
+ * @author Jiayi Xu
+ * @author ALejandro Rojas
+ *
  * @version 1.0
  * @since 2023-09-01
  */
@@ -79,6 +84,8 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                              //  cnx.setNumeroCompteClient(numCompteClient);
                              //cnx.setNumeroCompteActuel(banque.getNumeroCompteParDefaut(numCompteClient));
                             this.compteCheque=new CompteCheque(banque.getNumeroCompteBanque());
+                            CompteClient cptClient = banque.getCompteClient(numCompteClient);
+                            cptClient.ajouter(this.compteCheque);
                             cnx.envoyer("NOUVEAU OK " + t[0] + " cree" +" compte cheque creer "+compteCheque.getNumero() );
 
                         } else
@@ -113,6 +120,15 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                     }
 
                     CompteClient cptClient = serveurBanque.getBanque().getCompteClient(numCompteClient);
+                    List<CompteBancaire> comptesClient = cptClient.getComptes();
+                    for (CompteBancaire compte : comptesClient) {
+                        if (compte instanceof CompteCheque) {
+                            this.compteCheque = (CompteCheque) compte;
+                        } else if (compte instanceof CompteEpargne) {
+                            this.compteEpargne = (CompteEpargne) compte;
+                            this.epargne = true;
+                        }
+                    }
                     //3. Si le compte n'existe pas ou nip incorrect
                     if (cptClient == null || !cptClient.verifierNip(nip)) {
                         //Envoyer reponse
@@ -197,6 +213,7 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                     }
                     break;
                     // permet de retirer de l'argent
+                //Alejandro
                 case "RETRAIT":
                     argument = evenement.getArgument();
                     double valeur = Double.parseDouble(argument);
@@ -250,8 +267,37 @@ public class GestionnaireEvenementServeur implements GestionnaireEvenement {
                         cnx.envoyer("NO ");
                     }
                     break;
+                //Alejandro
+                case "HIST":
+                    if (cnx.getNumeroCompteClient() == null) {
+                        cnx.envoyer("HIST NO pas encore connecte");
+                        break;
+                    }
 
+                    CompteBancaire compteBancaire = null;
+                    if (chequeSelect) {
+                        compteBancaire = this.compteCheque;
+                    } else if (epargneSelect) {
+                        compteBancaire = this.compteEpargne;
+                    } else {
+                        cnx.envoyer("HIST NO aucun compte sélectionné");
+                        break;
+                    }
 
+                    if (compteBancaire == null) {
+                        cnx.envoyer("HIST NO compte bancaire introuvable");
+                        break;
+                    }
+
+                    List<Operation> historique = compteBancaire.getHistorique().toList();
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("HIST");
+                    for (Operation op : historique) {
+                        sb.append("\n").append(op.toString());
+                    }
+                    // Send the history to the client
+                    cnx.envoyer(sb.toString());
+                    break;
                 /******************* TRAITEMENT PAR DÉFAUT *******************/
                 default: //Renvoyer le texte recu convertit en majuscules :
                     msg = (evenement.getType() + " " + evenement.getArgument()).toUpperCase();
