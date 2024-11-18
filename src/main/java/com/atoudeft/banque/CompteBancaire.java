@@ -47,7 +47,7 @@ public abstract class CompteBancaire implements Serializable {
     /**
      * Ajoute une opération à l'historique.
      *
-     * @param operation l'opération à ajouter
+     * @param o l'opération à ajouter
      */
     //Jiayi Xu
     public void ajouterOp(Operation o) {
@@ -57,7 +57,7 @@ public abstract class CompteBancaire implements Serializable {
     /**
      * Retire une opération à l'historique.
      *
-     * @param operation l'opération à retirer
+     * @param o l'opération à retirer
      */
     //Jiayi Xu
     public void retirerOp(Operation o) {
