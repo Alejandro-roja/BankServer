@@ -1,6 +1,8 @@
 package com.atoudeft.banque.operation;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Cette classe implemente une Pile chaineee
@@ -69,5 +71,21 @@ public class PileChainee implements Serializable {
             return null;
         }
         return tete.getOperation();
+    }
+
+    /**
+     * Retourne une liste des operations dans l'ordre du plus recent au plus ancien.
+     *
+     * @return une liste des operations
+     */
+    //Jiayi Xu
+    public List<Operation> toList() {
+        List<Operation> listeOp = new ArrayList<>();
+        Noeud courant = tete;
+        while (courant !=null) {
+            listeOp.add(courant.getOperation());
+            courant = courant.getSuivant();
+        }
+        return listeOp;
     }
 }

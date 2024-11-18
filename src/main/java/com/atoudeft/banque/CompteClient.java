@@ -42,4 +42,20 @@ public class CompteClient implements Serializable {
      * @return true si le nip fournit est egal au nip du compte-client
      */
     public boolean verifierNip(String nipFournit) { return this.nip.equals(nipFournit); }
+
+    /**
+     * Recupere le compte bancaire correspondant au numero donné.
+     *
+     * @param numeroCompte le numero du compte bancaire
+     * @return le compte bancaire correspondant, null si introuvable
+     */
+    //Jiayi Xu
+    public CompteBancaire getCompte(String numeroCompte) {
+        for (CompteBancaire compte : comptes) {
+            if (compte.getNumero().equals(numeroCompte)) {
+                return compte;
+            }
+        }
+        return null;
+    }
 }
